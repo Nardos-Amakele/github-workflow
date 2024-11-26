@@ -1,0 +1,43 @@
+name: CI - Node.js Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14, 16, 18]
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    # Set up Node.js environment
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    # Install dependencies
+    - name: Install Dependencies
+      run: npm install
+
+    # Run tests
+    - name: Run Tests
+      run: npm test
+
+    # Optionally generate a code coverage report
+    - name: Upload Coverage Report
+      if: success()
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-report
+        path: coverage/
